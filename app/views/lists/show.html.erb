@@ -2,7 +2,7 @@
   <div class="card-category card-large" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)); background-size: cover; background-position: center; padding: 50px 20px; text-align: center; color: white;">
     <h1 class="display-4"><%= @list.name %></h1>
   </div>
-  <span class="movie-tag position-absolute top-0 end-0 m-3 badge bg-secondary"><%= pluralize(@list.movies.size, "movie") %></span>
+  <span class="movie-tag position top-0 end-0 m-3 badge bg-secondary"><%= pluralize(@list.movies.size, "movie") %></span>
 </div>
 
 <div class="container mb-5">
@@ -25,21 +25,45 @@
       <% bookmark = Bookmark.find_by(list: @list, movie: movie) %>
       <div class="col-12 col-sm-6 col-lg-4 mb-4" data-aos="zoom-in">
         <div class="bg-white rounded shadow h-100">
-          <%= image_tag movie.poster_url, alt: movie.title, class: "movie-img rounded-top" %>
+          <div class="text-center" style="margin-top: 20px;">
+            <%= image_tag movie.poster_url, alt: movie.title, class: "movie-img rounded-top", style: "width: 60%; margin: 0 auto;" %>
+          </div>
           <div class="p-3 d-flex flex-column h-100">
             <strong class="text-truncate"><%= movie.title %> <span class="text-muted font-weight-normal">• <%= movie.rating %> <i class="fas fa-star star-yellow"></i></span></strong>
-            <small class="text-muted flex-grow-1 text-truncate"><%= movie.overview %></small>
+            <small class="text-muted"><%= movie.overview %></small>
             <div class="d-flex align-items-end justify-content-between pt-2">
-              <div class="flex-grow-1">
-                <i class="fas fa-quote-left me-2"></i><small><%= bookmark.comment %></small>
-              </div>
-              <small class="flex-shrink-0"><%= link_to "Delete", bookmark_path(bookmark), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove #{movie.title} from your #{@list.name} list?" }, class: 'text-danger' %></small>
+              <small class="flex-shrink-0">
+                <%= link_to "Delete", bookmark_path(bookmark), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove #{movie.title} from your #{@list.name} list?" }, class: 'text-danger' %>
+              </small>
+            </div>
+            <button class="btn btn-link mt-2" onclick="toggleComments(this)">Show comments</button>
+            <div class="comments-container" style="display: none;">
+              <p><strong>Comments:</strong></p>
+              <p><%= bookmark.comment %></p>
             </div>
           </div>
         </div>
       </div>
     <% end %>
   </div>
+
+  <!-- Botão para voltar à página anterior -->
+  <div class="text-center mt-4">
+    <button class="btn btn-secondary" onclick="window.history.back();">Go Back</button>
+  </div>
 </div>
 
 <%= render "bookmarks/modal", list: @list, bookmark: @bookmark %>
+
+<script>
+  function toggleComments(button) {
+    const commentsContainer = button.nextElementSibling;
+    if (commentsContainer.style.display === "none") {
+      commentsContainer.style.display = "block";
+      button.textContent = "Hide comments"; // Alterar texto do botão
+    } else {
+      commentsContainer.style.display = "none";
+      button.textContent = "Show comments"; // Alterar texto do botão
+    }
+  }
+</script>
